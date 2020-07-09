@@ -1,0 +1,15 @@
+{
+  "name": "employees",
+  "version": "1.0.0",
+  "description": "* Now that we have learned how to import big collections of data into a server, it is time to put this new knowledge to the test by importing all of the data contained within `TopSongs.csv` into our database.",
+  "main": "index.js",
+  "dependencies": {
+    "mysql": "2.18.1",
+    "inquirer": "7.3.0"
+  },
+  "scripts": {
+    "test": "npm test"
+  },
+  "author": "",
+  "license": "ISC"
+}
