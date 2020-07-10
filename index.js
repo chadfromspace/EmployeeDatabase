@@ -124,6 +124,88 @@ function viewManagers(){
     })
 };
 
+function addEmployee(){
+    let managers = [];
+    var managerID;
+    var roleID;
+        var query = connection.query(
+            "SELECT * FROM manager",
+            function(err, res) {
+                if (err) throw err;
+                for(i=0;i<res.length;i++){
+                    managers.push(res[i].manager_name);
+                }
+                inquirer.prompt([
+                {
+                    type: 'input',
+                    message: "What is the employee's first name?",
+                    name: 'firstName'
+                },
+                {
+                    type: 'input',
+                    message: "What is the employee's last name?",
+                    name: 'lastName'
+                },
+                {
+                    type: 'list',
+                    message: "What is the employee's role?",
+                    name: 'roleSelection',
+                    choices: ['Sales Lead',
+                    'Salesperson',
+                    'Lead Engineer',
+                    'Software Engineer',
+                    'Account Manager',
+                    'Accountant',
+                    'Legal Team Lead'
+                    ]
+                },
+                {
+                    type: 'list',
+                    message: "What is the employee's role?",
+                    name: 'managerSelection',
+                    choices: managers
+                }
+            ]).then((response)=>{
+                for(i=0;i<res.length;i++){
+                    if(response.managerSelection===res[i].manager_name){
+                        managerID = res[i].id;
+                    }
+                }
+                    switch(response.roleSelection) {
+                          case 'Sales Lead':
+                              roleID = 1;
+                              break;
+                          case 'Salesperson':
+                              roleID = 2;
+                              break;
+                          case 'Lead Engineer':
+                              roleID = 3;
+                              break;
+                          case 'Software Engineer':
+                              roleID = 4;
+                              break;
+                          case 'Account Manager':
+                              roleID = 5;
+                              break;
+                          case 'Accountant':
+                              roleID = 6;
+                              break;
+                          case 'Legal Team Lead':
+                              roleID = 7;
+                              break;
+                          default:
+                          break;
+                    }
+                    var query = connection.query(
+                        "INSERT INTO employee (first_name,last_name,role_id,manager_id) VALUES ('" + response.firstName + "',"+"'"+response.lastName+"','"+roleID+"','"+managerID+"')",
+                        function(err, res) {
+                        if (err) throw err;
+                    })
+                    init();
+            });
+        });
+}
+
 function init(){
     inquirer.prompt([
             {
@@ -153,6 +235,7 @@ function init(){
                   viewManagers();
                   break;
               case 'Add Employee':
+                  addEmployee();
                   break;
               case 'Remove Employee':
                   break;
