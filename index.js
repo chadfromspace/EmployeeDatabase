@@ -38,8 +38,12 @@ connection.connect(function(err) {
 });
 
 function viewEmployees(){
+  let queryURL = "select *"
+  queryURL += "from employee"
+  queryURL += " inner join role on employee.role_id=role.id"
+  queryURL += " inner join managers on role.department_id=managers.department_id";
   var query = connection.query(
-    "select * from employee",
+    queryURL,
     function(err, res) {
       if (err) throw err;
       console.table(res);
@@ -49,72 +53,59 @@ function viewEmployees(){
 };
 
 function viewDepartments(){
-    inquirer.prompt([
-    {
-        type: 'list',
-        message: 'Select Department',
-        name: 'departmentSelection',
-        choices: ['Engineering',
-            'Sales',
-            'Service',
-            'Finance',
-            'Legal',
-            'HR'
-        ]
-    }
-    ]).then((response) => {
-                let departmentCode = 1;
-                switch(response.departmentSelection) {
-                  case 'Engineering':
-                      departmentCode = 1;
-                      break;
-                  case 'Sales':
-                      departmentCode = 2;
-                      break;
-                  case 'Service':
-                      departmentCode = 3;
-                      break;
-                  case 'Finance':
-                      departmentCode = 4;
-                      break;
-                  case 'Legal':
-                      departmentCode = 5;
-                      break;
-                  case 'HR':
-                      departmentCode = 6;
-                      break;
-                  default:
-                      break;
+    var currentRoles = [];
+    var departmentID;
+    let queryURL = "select * from role";
+    var query = connection.query(
+        queryURL,
+        function(err, res){
+            if (err) throw err;
+            for(i=0;i<res.length;i++){
+                currentRoles.push(res[i].title);
+            }
+            inquirer.prompt([
+                {
+                    type: 'list',
+                    message: 'Select Department',
+                    name: 'departmentSelection',
+                    choices: currentRoles
                 }
-                var query = connection.query(
-                "SELECT * FROM employee INNER JOIN role on employee.role_id=role.id WHERE role.department_id='" + departmentCode + "'",
-                function(err, res) {
-                    if (err) throw err;
-                    console.table(res);
-                    init();
+            ]).then((response) => {
+                        for(i=0;i<currentRoles.length;i++){
+                            if(response.departmentSelection===currentRoles[i]){
+                                departmentID = currentRoles.indexOf(currentRoles[i])+1;
+                            }
+                        }
+                        var query = connection.query(
+                        "SELECT * FROM employee INNER JOIN role on employee.role_id=role.id WHERE role.department_id='" + departmentID + "'",
+                        function(err, res) {
+                            if (err) throw err;
+                            console.table(res);
+                            init();
+                    });
             });
     });
 };
 
 function viewManagers(){
     var query = connection.query(
-        "SELECT manager_name FROM manager",
+        "SELECT manager FROM managers",
         function(err, res) {
             if (err) throw err;
-            let managers = [];
+            let managersArray = [];
             for(i=0;i<res.length;i++){
-                managers.push(res[i].manager_name);
+                managersArray.push(res[i].manager);
             }
         inquirer.prompt([
             {
                 type: 'list',
                 message: 'What would you like to do?',
                 name: 'selection',
-                choices: managers
+                choices: managersArray
             }
             ]).then((response)=>{
                 var query = connection.query(
-                "SELECT * FROM employee INNER JOIN manager on employee.manager_id=manager.id WHERE manager.manager_name='"+response.selection+"'",
+                "SELECT * FROM employee INNER JOIN managers on employee.manager_id=managers.id WHERE managers.manager='"+response.selection+"'",
                 function(err, res) {
                 if (err) throw err;
                 console.table(res);
@@ -128,82 +119,85 @@ function addEmployee(){
     let managers = [];
     var managerID;
     var roleID;
+    var currentRoles;
         var query = connection.query(
-            "SELECT * FROM manager",
+            "SELECT * FROM managers,role",
             function(err, res) {
                 if (err) throw err;
                 for(i=0;i<res.length;i++){
                     managers.push(res[i].manager_name);
+                    currentRoles.push(res[i].title);
                 }
+                console.log(currentRoles);
                 inquirer.prompt([
-                {
-                    type: 'input',
-                    message: "What is the employee's first name?",
-                    name: 'firstName'
-                },
-                {
-                    type: 'input',
-                    message: "What is the employee's last name?",
-                    name: 'lastName'
-                },
-                {
-                    type: 'list',
-                    message: "What is the employee's role?",
-                    name: 'roleSelection',
-                    choices: ['Sales Lead',
-                    'Salesperson',
-                    'Lead Engineer',
-                    'Software Engineer',
-                    'Account Manager',
-                    'Accountant',
-                    'Legal Team Lead'
-                    ]
-                },
-                {
-                    type: 'list',
-                    message: "What is the employee's role?",
-                    name: 'managerSelection',
-                    choices: managers
-                }
-            ]).then((response)=>{
-                for(i=0;i<res.length;i++){
-                    if(response.managerSelection===res[i].manager_name){
-                        managerID = res[i].id;
+                    {
+                        type: 'input',
+                        message: "What is the employee's first name?",
+                        name: 'firstName'
+                    },
+                    {
+                        type: 'input',
+                        message: "What is the employee's last name?",
+                        name: 'lastName'
+                    },
+                    {
+                        type: 'list',
+                        message: "What is the employee's role?",
+                        name: 'roleSelection',
+                        choices: ['Sales Lead',
+                        'Salesperson',
+                        'Lead Engineer',
+                        'Software Engineer',
+                        'Account Manager',
+                        'Accountant',
+                        'Legal Team Lead'
+                        ]
+                    },
+                    {
+                        type: 'list',
+                        message: "What is the employee's role?",
+                        name: 'managerSelection',
+                        choices: managers
                     }
-                }
-                    switch(response.roleSelection) {
-                          case 'Sales Lead':
-                              roleID = 1;
-                              break;
-                          case 'Salesperson':
-                              roleID = 2;
-                              break;
-                          case 'Lead Engineer':
-                              roleID = 3;
-                              break;
-                          case 'Software Engineer':
-                              roleID = 4;
-                              break;
-                          case 'Account Manager':
-                              roleID = 5;
-                              break;
-                          case 'Accountant':
-                              roleID = 6;
-                              break;
-                          case 'Legal Team Lead':
-                              roleID = 7;
-                              break;
-                          default:
-                          break;
-                    }
-                    var query = connection.query(
-                        "INSERT INTO employee (first_name,last_name,role_id,manager_id) VALUES ('" + response.firstName + "',"+"'"+response.lastName+"','"+roleID+"','"+managerID+"')",
-                        function(err, res) {
-                        if (err) throw err;
-                    })
-                    init();
+                ]).then((response)=>{
+                            for(i=0;i<res.length;i++){
+                                if(response.managerSelection===res[i].manager_name){
+                                    managerID = res[i].id;
+                                }
+                            }
+                            switch(response.roleSelection) {
+                                  case 'Sales Lead':
+                                      roleID = 1;
+                                      break;
+                                  case 'Salesperson':
+                                      roleID = 2;
+                                      break;
+                                  case 'Lead Engineer':
+                                      roleID = 3;
+                                      break;
+                                  case 'Software Engineer':
+                                      roleID = 4;
+                                      break;
+                                  case 'Account Manager':
+                                      roleID = 5;
+                                      break;
+                                  case 'Accountant':
+                                      roleID = 6;
+                                      break;
+                                  case 'Legal Team Lead':
+                                      roleID = 7;
+                                      break;
+                                  default:
+                                  break;
+                             }
+                        var query = connection.query(
+                            "INSERT INTO employee (first_name,last_name,role_id,manager_id) VALUES ('" + response.firstName + "',"+"'"+response.lastName+"','"+roleID+"','"+managerID+"')",
+                            function(err, res) {
+                            if (err) throw err;
+                        })
+                        init();
+                });
             });
-        });
 }
 
 function init(){
