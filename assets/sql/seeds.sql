@@ -5,7 +5,7 @@ USE employeesDB;
 
 CREATE TABLE department(
   id INT NOT NULL AUTO_INCREMENT,
-  name VARCHAR(30),
+  department_name VARCHAR(30),
   PRIMARY KEY (id)
 );
 
@@ -33,7 +33,7 @@ CREATE TABLE manager(
   PRIMARY KEY (id)
 );
 
-INSERT INTO department (name)
+INSERT INTO department (department_name)
 VALUES ('Engineering'),
 ('Sales'),
 ('Service'),
@@ -41,20 +41,20 @@ VALUES ('Engineering'),
 ('Legal'),
 ('HR');
 
-INSERT INTO role (title,salary)
-VALUES ('Sales Lead','200000.00'),
-('Salesperson','150000.00'),
-('Lead Engineer','85000.00'),
-('Software Engineer','70000.00'),
-('Account Manager','60000.00'),
-('Accountant','50000.00'),
-('Legal Team Lead','75000.00');
+INSERT INTO role (title,salary,department_id)
+VALUES ('Sales Lead','200000.00','2'),
+('Salesperson','150000.00','2'),
+('Lead Engineer','85000.00','1'),
+('Software Engineer','70000.00','1'),
+('Account Manager','60000.00','3'),
+('Accountant','50000.00','4'),
+('Legal Team Lead','75000.00','5');
 
 INSERT INTO employee (first_name,last_name,role_id,manager_id)
 VALUES ('Joe','Smith','1','1'),
-('Bob','Williams','1','1'),
-('Will','Stevens','1','1'),
-('George','Rogers','1','1');
+('Bob','Williams','2','1'),
+('Will','Stevens','3','3'),
+('George','Rogers','4','3');
 
 INSERT INTO manager (first_name,last_name)
 VALUES ('Joe','Smith'),
@@ -65,4 +65,8 @@ FROM employee
 INNER JOIN role on employee.role_id=role.id
 INNER JOIN manager on employee.manager_id=manager.id;
 
-SELECT * FROM manager;
+SELECT * FROM employee;
+
+select * from role
+inner join department on role.department_id=department.id
+inner join employee on employee.role_id=role.id;
