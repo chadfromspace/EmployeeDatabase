@@ -7,6 +7,8 @@
   This is an application that can be used to track an employee database using SQL.
 
    ![IMG](./assets/img/img.png)
+   
+   [Demo Video](https://drive.google.com/file/d/1qQ_T50XK1hEzRGsZnixfX8_1carn3Yrn/view?usp=sharing)
 
   ## Table of Contents
 
