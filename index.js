@@ -421,7 +421,6 @@ function init(){
                 'Remove Role',
                 'Remove Department',
                 'Update Employee Role',
-                'View All Roles',
                 'Exit']
             }
         ])
