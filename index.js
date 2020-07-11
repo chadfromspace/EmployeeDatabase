@@ -211,7 +211,7 @@ function addEmployee(){
                     },
                     {
                         type: 'list',
-                        message: "What is the employee's role?",
+                        message: "Who is the employee's manager?",
                         name: 'managerSelection',
                         choices: managers
                     }
@@ -251,7 +251,7 @@ function removeEmployee(){
               inquirer.prompt([
                   {
                       type: 'list',
-                      message: 'What would you like to do?',
+                      message: 'Who would you like to remove?',
                       name: 'selection',
                       choices: employeeArray
                   }
