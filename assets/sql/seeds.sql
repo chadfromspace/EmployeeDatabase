@@ -26,10 +26,9 @@ CREATE TABLE employee(
   PRIMARY KEY (id)
 );
 
-CREATE TABLE manager(
+CREATE TABLE managers(
   id INT NOT NULL AUTO_INCREMENT,
-  first_name VARCHAR(30),
-  last_name VARCHAR(30),
+  manager VARCHAR(30),
   PRIMARY KEY (id)
 );
 
@@ -38,8 +37,7 @@ VALUES ('Engineering'),
 ('Sales'),
 ('Service'),
 ('Finance'),
-('Legal'),
-('HR');
+('Legal');
 
 INSERT INTO role (title,salary,department_id)
 VALUES ('Sales Lead','200000.00','2'),
@@ -51,22 +49,24 @@ VALUES ('Sales Lead','200000.00','2'),
 ('Legal Team Lead','75000.00','5');
 
 INSERT INTO employee (first_name,last_name,role_id,manager_id)
-VALUES ('Joe','Smith','1','1'),
+VALUES ('Joe','Smith','1',NULL),
 ('Bob','Williams','2','1'),
-('Will','Stevens','3','3'),
-('George','Rogers','4','3');
+('Will','Stevens','2','1'),
+('George','Rogers','3',NULL),
+('David','Brown','4','2'),
+('Ashley','Miller','4','2'),
+('Will','Anderson','5',NULL),
+('Wendy','Moore','5','3'),
+('Brian','Jackson','5','3'),
+('Greg','Martin','6',NULL),
+('Lewis','Walker','6','4'),
+('Winston','Scott','7',NULL);
 
-INSERT INTO manager (first_name,last_name)
-VALUES ('Joe','Smith'),
-('Bob','Williams');
-
-SELECT employee.first_name,employee.last_name,role.title,manager.first_name
-FROM employee
-INNER JOIN role on employee.role_id=role.id
-INNER JOIN manager on employee.manager_id=manager.id;
+INSERT INTO managers (manager)
+VALUES ('Joe Smith'),
+('George Rogers'),
+('Will Anderson'),
+('Greg Martin'),
+('Winston Scott');
 
 SELECT * FROM employee;
-
-select * from role
-inner join department on role.department_id=department.id
-inner join employee on employee.role_id=role.id;
